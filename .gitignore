@@ -4,5 +4,5 @@ env/
 __pycache__/
 *.pyc
 
-dados_vibracao_defeitos/*.mat
+*.mat
 sample_data/*.csv
