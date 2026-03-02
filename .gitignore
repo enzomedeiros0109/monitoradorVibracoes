@@ -1,0 +1,8 @@
+venv/
+.venv/
+env/
+__pycache__/
+*.pyc
+
+dados_vibracao_defeitos/*.mat
+sample_data/*.csv
