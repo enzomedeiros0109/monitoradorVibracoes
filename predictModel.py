@@ -24,6 +24,7 @@ if os.path.exists(MODEL_PATH) and os.path.exists(SCALER_PATH) and os.path.exists
 
 elif os.path.exists(dataset_path):
     print("Arquivo de ML não encontrado. Começando ML do zero.")
+    os.mkdir("ML")
     df_sample = pd.read_csv('./sample_data/dataset_de_features.csv')
 
     X = df_sample.drop('fault', axis=1).values
@@ -83,9 +84,9 @@ def erroLabel(erro):
         # SCA Dataset prefix
         if erro.startswith('SCA_'):
             if erro == "SCA_Normal": erroProv = 'Vibração normal'
-            elif erro == "SCA_AnelInterno": erroProv = 'Pista interna'
+            elif erro == "SCA_AnelInterno": erroProv = 'AnelInterno'
             elif erro == "SCA_Bola": erroProv = 'Bola'
-            elif erro == "SCA_AnelExterno": erroProv = 'Pista externa'
+            elif erro == "SCA_AnelExterno": erroProv = 'PAnelExterno'
             else: erroProv = 'Desconhecido'
 
         #CWRU dataset prefix
