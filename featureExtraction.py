@@ -7,7 +7,7 @@ from app import processamento
 WINDOW_SIZE = 2048
 STEP_SIZE = 1024
 
-df_raw = pd.read_csv('./sample_data/all_faults.csv')
+df_raw = pd.read_csv('sample_data/all_faults.csv')
 labels = df_raw['fault'].unique()
 
 all_rows = []
@@ -37,7 +37,7 @@ else:
 
     df_features = pd.DataFrame(all_rows, columns=feature_columns)
 
-    df_features.to_csv('dataset_de_features.csv', index=False)
+    df_features.to_csv('sample_data/dataset_de_features.csv', index=False)
 
     print("Novo dataset 'dataset_de_features.csv' salvo com sucesso!")
     print(df_features.head())

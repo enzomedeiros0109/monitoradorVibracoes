@@ -13,7 +13,7 @@ taxa_alvo = 1000
 
 df = pd.DataFrame(columns=['DE_data', 'fault'])
 
-for root, dirs, files in os.walk("dados_vibracao_defeitos", topdown=False):
+for root, dirs, files in os.walk("dados_vibracao_defeitos/CWRU", topdown=False):
     for file_name in files:
         path = os.path.join(root, file_name)
         print(path)
@@ -47,9 +47,9 @@ for root, dirs, files in os.walk("dados_vibracao_defeitos", topdown=False):
         df = pd.concat([df,df_temp], axis=0)
         print(df['fault'].unique())
     
-df.to_csv('all_faults.csv', index = False)
-
-df = pd.read_csv('all_faults.csv')
+df.to_csv('sample_data/all_faults.csv', index = False)
+print("Dataset CWRU adicionado com sucesso!")
+#df = pd.read_csv('sample_data/all_faults.csv')
 
 faults = df['fault'].unique()
 # for f in faults:
@@ -58,4 +58,4 @@ faults = df['fault'].unique()
 #     plt.title(f)
 #     plt.show()
 
-print(df)
+#print(df)

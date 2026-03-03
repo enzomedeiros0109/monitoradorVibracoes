@@ -6,58 +6,88 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score
 from collections import Counter
+import joblib
+import os
 
-df_sample = pd.read_csv('./sample_data/dataset_de_features.csv')
+#Diretório da "memória" da máquina
+MODEL_PATH = './ML/modelo_rf.joblib'
+SCALER_PATH = './ML/scaler.joblib'
+IDX_PATH = './ML/features_idx.joblib'
 
-X = df_sample.drop('fault', axis=1).values
-y = df_sample['fault']
+dataset_path = './sample_data/dataset_de_features.csv'
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X, y, 
-    test_size=0.25, 
-    random_state=42, 
-    stratify=y
-)
+if os.path.exists(MODEL_PATH) and os.path.exists(SCALER_PATH) and os.path.exists(IDX_PATH):
+    print(f"Carregando arquivo de {MODEL_PATH}")
+    rf2 = joblib.load(MODEL_PATH)
+    scaler = joblib.load(SCALER_PATH)
+    idx = joblib.load(IDX_PATH)
 
-scaler = MinMaxScaler()
-X_train = scaler.fit_transform(X_train)
-X_test = scaler.transform(X_test)
+elif os.path.exists(dataset_path):
+    print("Arquivo de ML não encontrado. Começando ML do zero.")
+    df_sample = pd.read_csv('./sample_data/dataset_de_features.csv')
 
-rf = RandomForestClassifier(
-    n_estimators=500,
-    max_depth=15,
-    random_state=42,
-    n_jobs=-1
-)
-rf.fit(X_train, y_train)
-importances = rf.feature_importances_
+    X = df_sample.drop('fault', axis=1).values
+    y = df_sample['fault']
 
-idx = np.argsort(importances)[-200:]
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, 
+        test_size=0.25, 
+        random_state=42, 
+        stratify=y
+    )
 
-X_train_sel = X_train[:, idx]
-X_test_sel = X_test[:, idx]
+    scaler = MinMaxScaler()
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
 
-rf2 = RandomForestClassifier(
-    n_estimators=500,
-    max_depth=15,
-    random_state=42,
-    n_jobs=-1
-)
+    rf = RandomForestClassifier(
+        n_estimators=500,
+        max_depth=15,
+        random_state=42,
+        n_jobs=-1
+    )
+    rf.fit(X_train, y_train)
+    importances = rf.feature_importances_
 
-rf2.fit(X_train_sel, y_train)
-y_pred = rf2.predict(X_test_sel)
-accuracy = accuracy_score(y_test, y_pred) * 100
-print(f"Acurácia do modelo: {accuracy:.4f}%")
+    idx = np.argsort(importances)[-200:]
+
+    X_train_sel = X_train[:, idx]
+    X_test_sel = X_test[:, idx]
+
+    rf2 = RandomForestClassifier(
+        n_estimators=500,
+        max_depth=15,
+        random_state=42,
+        n_jobs=-1
+    )
+
+    rf2.fit(X_train_sel, y_train)
+    y_pred = rf2.predict(X_test_sel)
+    accuracy = accuracy_score(y_test, y_pred) * 100
+    print(f"Acurácia do modelo: {accuracy:.4f}%")
+
+    # Salva o aprendizado da máquina
+    joblib.dump(rf2, MODEL_PATH)
+    joblib.dump(scaler, SCALER_PATH)
+    joblib.dump(idx, IDX_PATH)
+else:
+    scaler, rf2, idx = None, None, None
 
 def erroLabel(erro):
     erro = str(erro)
-    
-    """if '_' not in erro or not any(x in erro for x in ['B', 'I', 'n', 'O', '007', '014', '021', '028']):
-        return f"ERRO PROVÁVEL: {erro} | DIAMETRO DA FALHA: N/A | CARGA DO MOTOR: N/A"""
 
     erroProv, diametroFalha, cargaMotor = '', 'N/A', 'N/A'
     
     try:
+    
+        # SCA Dataset prefix
+        if erro.startswith('SCA_'):
+            if erro == "SCA_Normal": erroProv = 'Vibração normal'
+            elif erro == "SCA_AnelInterno": erroProv = 'Pista interna'
+            elif erro == "SCA_Bola": erroProv = 'Bola'
+            elif erro == "SCA_AnelExterno": erroProv = 'Pista externa'
+            else: erroProv = 'Desconhecido'
+
         #CWRU dataset prefix
         if '_' in erro:
 
@@ -75,7 +105,9 @@ def erroLabel(erro):
                 else:
                     erroProv = 'Pista externa'
             elif 'B' in erro: erroProv = 'Bola'
-                    
+
+            # CWRU Dataset Ball Diameter prefix
+
             if '007' in erro: diametroFalha = '0.007 polegadas'
             elif '014' in erro: diametroFalha = '0.014 polegadas'
             elif '021' in erro: diametroFalha = '0.021 polegadas'
@@ -85,7 +117,7 @@ def erroLabel(erro):
             carga = cargaMotor[1] if len(cargaMotor) > 1 else "N/A"
             return f"ERRO PROVÁVEL: {erroProv} | DIAMETRO DA FALHA: {diametroFalha} | CARGA DO MOTOR: {carga}"
 
-        # Apenas o dataset CWRU possui '_' no label
+        # Apenas o dataset CWRU e SCA possui '_' no label
         if '_' not in erro:
             #HUST dataset prefix
             if 'IB' in erro: erroProv = 'Rachadura interna e Bola'

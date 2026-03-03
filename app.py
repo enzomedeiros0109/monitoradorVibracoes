@@ -8,7 +8,7 @@ from datetime import datetime
 from PyQt6 import QtWidgets, QtCore, QtGui
 from predictModel import previsao
 
-COM_PORT = 'COM3'
+COM_PORT = 'COM1'
 BAUD_RATE = 921600
 BUFFER_SIZE = 2048
 SAMPLE_RATE = 1000
