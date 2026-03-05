@@ -24,7 +24,9 @@ if os.path.exists(MODEL_PATH) and os.path.exists(SCALER_PATH) and os.path.exists
 
 elif os.path.exists(dataset_path):
     print("Arquivo de ML não encontrado. Começando ML do zero.")
+    os.mkdir("dados_vibracao_defeitos")
     os.mkdir("ML")
+    os.mkdir("sample_data")
     df_sample = pd.read_csv('./sample_data/dataset_de_features.csv')
 
     X = df_sample.drop('fault', axis=1).values
