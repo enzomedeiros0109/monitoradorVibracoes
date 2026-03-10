@@ -6,11 +6,15 @@ import numpy as np
 
 csv_path = "sample_data/all_faults.csv"
 sample_target = 1000
-base_df = pd.read_csv(csv_path)
 new_data_list = []
 
+if os.path.exists(csv_path):
+    base_df = pd.read_csv(csv_path)
+else:
+    base_df = pd.DataFrame() # Cria um vazio se for a primeira vez
+
 def processar_dados():
-    for root, dirs, files in os.walk("dados_vibracao_defeitos/SCA", topdown=False):
+    for root, files in os.walk("dados_vibracao_defeitos/SCA", topdown=False):
         for file_name in files:
             if file_name.endswith(".mat"):
                 path = os.path.join(root, file_name)
@@ -80,7 +84,7 @@ def processar_dados():
                         # print(f"DS: {ds}")
                     
                 except Exception as e:
-                    print(f"Um erro ocorreu a tentar ler o arquivo {file_name} em {path}")
+                    print(f"Um erro ocorreu a tentar ler o arquivo {file_name} em {e}")
 
     if new_data_list:
         print("\nAdicionando à all_faults.csv")
