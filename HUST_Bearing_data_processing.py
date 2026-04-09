@@ -5,7 +5,7 @@ from scipy import signal
 import scipy.io
 
 # Configurações do HUST
-HUST_FOLDER = "dados_vibracao_defeitos\HUST" 
+HUST_FOLDER = "dados_vibracao_defeitos/HUST" 
 TARGET_SAMPLE_RATE = 1000        
 
 # Taxa de amostragem oficial do dataset HUST
@@ -36,13 +36,12 @@ def processar_hust():
                 try:
                     mat = scipy.io.loadmat(path)
                     
-                    # Pega apenas a vibração
+                    # Confirme se a chave no HUST é sempre 'data'
                     raw_signal = mat['data'].flatten()
                     
-                    # Faz o Resample usando a taxa manual
-                    signal_duration = len(raw_signal) / ORIGINAL_SAMPLE_RATE
-                    num_target_samples = int(signal_duration * TARGET_SAMPLE_RATE)
-                    signal_1kHz = signal.resample(raw_signal, num_target_samples)
+                    # Resample Poly: Essencial para simular o MPU6050 sem aliasing!
+                    # 51200 * (10 / 512) = 1000
+                    signal_1kHz = signal.resample_poly(raw_signal, up=10, down=512)
 
                     # Prepara a coluna
                     fault_col = np.full((len(signal_1kHz), 1), fault_name)
@@ -60,15 +59,15 @@ def processar_hust():
 
     if new_data_list:
         print("\nA unir os novos dados ao dataset principal...")
-        new_df = pd.concat(new_data_list, axis=0)
-        final_df = pd.concat([base_df, new_df], axis=0)
+        new_df = pd.concat(new_data_list, ignore_index=True)
+        final_df = pd.concat([base_df, new_df], ignore_index=True)
         
         final_df.to_csv(CSV_DESTINO, index=False)
         
-        print("\n Dataset HUST processado e adicionado com sucesso!")
+        print("\nDataset HUST processado e adicionado com sucesso!")
         print(f"Novas falhas injetadas: {new_df['fault'].unique()}")
     else:
-        print("\n⚠️ Nenhum ficheiro processado. Verifique a pasta.")
+        print("\nNenhum ficheiro processado. Verifique a pasta.")
 
 if __name__ == '__main__':
     processar_hust()

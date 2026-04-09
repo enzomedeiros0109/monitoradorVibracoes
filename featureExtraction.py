@@ -1,11 +1,10 @@
-#extrai as features de cada sinal de falha janelado (2048) e cria uma nova csv de features(RMS, curtose, fator de crista, valor de pico e desvio padrão)
 import pandas as pd
 import numpy as np
-from scipy import stats
 from app import processamento
 
 WINDOW_SIZE = 2048
-STEP_SIZE = 1024
+# STEP igual ao WINDOW para evitar Data Leakage (amostras independentes)
+STEP_SIZE = 2048 
 
 df_raw = pd.read_csv('sample_data/all_faults.csv')
 labels = df_raw['fault'].unique()
@@ -21,7 +20,9 @@ for label in labels:
         if len(window) < WINDOW_SIZE or np.std(window) == 0:
             continue
 
+        # Extração estritamente no Domínio da Frequência (FFT)
         fft_mags = processamento(window)[1:]
+        
         row = list(fft_mags)
         row.append(label)
         all_rows.append(row)
@@ -31,6 +32,7 @@ print(f"Extração concluída. Total de {len(all_rows)} janelas processadas.")
 if not all_rows:
     print("Nenhum dado foi processado. Encerrando")
 else:
+    # Geração apenas das colunas de magnitude e o rótulo
     num_features = len(all_rows[0]) - 1
     feature_columns = [f"Mag_bin_{i}" for i in range(num_features)]
     feature_columns.append('fault')
