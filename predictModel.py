@@ -90,7 +90,7 @@ def erroLabel(erro):
     erroProv, diametroFalha, cargaMotor = '', 'N/A', 'N/A'
     
     try:
-        # DATASET SCA
+        #  DATASET SCA
         if erro.startswith('SCA_'):
             if erro == 'SCA_Desligada': erroProv = 'Máquina desligada / Sem dados'
             elif erro == 'SCA_Normal': erroProv = 'Vibração normal'
