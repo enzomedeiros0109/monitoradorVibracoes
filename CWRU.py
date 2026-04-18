@@ -1,4 +1,3 @@
-#processa os dados de falhas e cria csv com todos os dados juntos, com coluna de dados e o rótulo do defeito
 import scipy.io
 import seaborn as sns
 import numpy as np
@@ -20,7 +19,6 @@ for root, dirs, files in os.walk("dados_vibracao_defeitos/CWRU", topdown=False):
 
         mat = scipy.io.loadmat(path)
 
-        #key_name = list(mat.keys())[3]
         key_name = None
         for key in mat.keys():
             if 'DE_time' in key:
@@ -49,13 +47,5 @@ for root, dirs, files in os.walk("dados_vibracao_defeitos/CWRU", topdown=False):
     
 df.to_csv('sample_data/all_faults.csv', index = False)
 print("Dataset CWRU adicionado com sucesso!")
-#df = pd.read_csv('sample_data/all_faults.csv')
 
 faults = df['fault'].unique()
-# for f in faults:
-#     plt.figure(figsize=(10,3))
-#     plt.plot(df[df['fault']==f].iloc[:,0])
-#     plt.title(f)
-#     plt.show()
-
-#print(df)

@@ -1,4 +1,3 @@
-#extrai as features de cada sinal de falha janelado (2048) e cria uma nova csv de features(RMS, curtose, fator de crista, valor de pico e desvio padrão)
 import pandas as pd
 import numpy as np
 from scipy import stats
