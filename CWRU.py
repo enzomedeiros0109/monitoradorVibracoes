@@ -33,7 +33,8 @@ for root, dirs, files in os.walk("dados_vibracao_defeitos/CWRU", topdown=False):
 
         duracao_sinal = len(DE_data) / taxa_original
         num_amostras_alvo = int(duracao_sinal*taxa_alvo)
-        sinal_1kHz = signal.resample(DE_data, num_amostras_alvo)
+        # Filtro anti-aliasing para evitar artefatos
+        sinal_1kHz = signal.resample_poly(DE_data, taxa_alvo, taxa_original)
 
         print(f"Shape do sinal original (12kHz): {DE_data.shape}")
         print(f"Shape do novo sinal (1kHz): {sinal_1kHz.shape}")

@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import os
 from scipy import signal
+from math import gcd
 
 taxa_alvo = 1000
 
@@ -30,7 +31,7 @@ for root, dirs, files in os.walk("dados_vibracao_defeitos/SCA", topdown=False):
             print(f"Erro ao ler arquivo {file_name}: {e}")
             continue
 
-        for sensor in ['DS', 'FS']:
+        for sensor in ['DS', 'FS', 'Upper', 'Lower']:
             if sensor not in mat:
                 continue
                 
@@ -68,7 +69,14 @@ for root, dirs, files in os.walk("dados_vibracao_defeitos/SCA", topdown=False):
                 # Reamostragem
                 duracao = len(sinal) / taxa_orig
                 num_amostras = int(duracao * taxa_alvo)
-                sinal_1kHz = signal.resample(sinal, num_amostras)
+                # upsample
+                if taxa_orig != taxa_alvo:
+                    g = gcd(taxa_alvo, taxa_orig)
+                    sinal_1kHz = signal.resample_poly(sinal, taxa_alvo // g, taxa_orig // g)
+
+                else:
+                    # Se a frequência já for a alvo, pula o processamento pesado
+                    sinal_1kHz = sinal
                 
                 sinais_resampled.append(sinal_1kHz)
                 labels_expandidos.append(np.full(len(sinal_1kHz), label_str))
