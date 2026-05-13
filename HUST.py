@@ -35,7 +35,8 @@ for root, dirs, files in os.walk("dados_vibracao_defeitos/HUST", topdown=False):
         num_amostras_alvo = int(duracao_sinal * taxa_alvo)
         
         # Faz a reamostragem (resample) para 1000 Hz
-        sinal_1kHz = signal.resample(vibration_data, num_amostras_alvo)
+        # Filtro anti-aliasing para evitar artefatos
+        sinal_1kHz = signal.resample_poly(vibration_data, taxa_alvo, taxa_original)
 
         print(f"Shape do sinal original ({taxa_original}Hz): {vibration_data.shape}")
         print(f"Shape do novo sinal ({taxa_alvo}Hz): {sinal_1kHz.shape}")

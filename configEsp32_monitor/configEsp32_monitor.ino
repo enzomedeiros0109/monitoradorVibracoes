@@ -9,6 +9,8 @@ bool python_pronto = false;
 unsigned long last_pronto_time = 0;
 const unsigned long pronto_interval = 500;
 
+const uint8_t cabecalho[2] = {0xAA, 0xBB};
+
 void writeRegister(uint8_t reg, uint8_t value){
   Wire.beginTransmission(MPU_ADDR);
   Wire.write(reg);
@@ -56,6 +58,8 @@ void loop() {
 
       float ax, ay, az;
       readAccel(ax, ay, az);
+
+      Serial.write(cabecalho, 2);
 
       Serial.write((uint8_t*) &ax, sizeof(ax));
       Serial.write((uint8_t*) &ay, sizeof(ay));
