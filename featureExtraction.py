@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from scipy import stats
-#
+##
 WINDOW_SIZE = 2048
 STEP_SIZE = 2048
 TAXA_ALVO = 1000 # Frequência MPU6050
