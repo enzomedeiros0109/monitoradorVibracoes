@@ -3,7 +3,7 @@ import numpy as np
 from scipy import stats
 
 WINDOW_SIZE = 2048
-STEP_SIZE = 1024
+STEP_SIZE = 2048
 TAXA_ALVO = 1000 # Frequência MPU6050
 
 df_raw = pd.read_csv('sample_data/all_faults.csv')
